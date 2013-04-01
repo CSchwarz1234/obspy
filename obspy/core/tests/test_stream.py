@@ -1736,6 +1736,20 @@ class StreamTestCase(unittest.TestCase):
 
 def suite():
     return unittest.makeSuite(StreamTestCase, 'test')
+    
+def test_mergeChecks(self):
+    """
+    test if _mergeChecks is right
+    test OK when merging is possible
+    """
+    for trace in st.traces:
+        self.assertEqual(st.traces[0].stats.sampling_rate, trace.stats.sampling_rate)
+        self.assertEqual(st.traces[0].data.dtype, trace.data.dtype)
+        self.assertEqual(st.traces[0].stats.calib, trace.stats.calib)
+        if st.traces[0].stats.has_key('paz') is True:
+            self.assertEqual(st.traces[0].stats.paz, trace.stats.paz)
+        if st.traces[0].stats.has_key('coordinates') is True:
+            self.assertEqual(st.traces[0].stats.coordinates, trace.stats.coordinates)
 
 
 if __name__ == '__main__':
