@@ -1559,10 +1559,15 @@ class Stream(object):
     def _mergeChecks(self):
         """
         Sanity checks for merging.
+        
+        :rtype: stream
+        :rparameter: Stream containing the traces which shall be checked to merge
         """
         sr = {}
         dtype = {}
         calib = {}
+        paz = {}
+        coordinate = {}
         for trace in self.traces:
             # skip empty traces
             if len(trace) == 0:
@@ -1571,20 +1576,34 @@ class Stream(object):
             sr.setdefault(trace.id, trace.stats.sampling_rate)
             if trace.stats.sampling_rate != sr[trace.id]:
                 msg = "Can't merge traces with same ids but differing " + \
-                      "sampling rates!"
+                    "sampling rates!"
                 raise Exception(msg)
             # Check dtype.
             dtype.setdefault(trace.id, trace.data.dtype)
             if trace.data.dtype != dtype[trace.id]:
                 msg = "Can't merge traces with same ids but differing " + \
-                      "data types!"
+                    "data types!"
                 raise Exception(msg)
             # Check calibration factor.
             calib.setdefault(trace.id, trace.stats.calib)
             if trace.stats.calib != calib[trace.id]:
                 msg = "Can't merge traces with same ids but differing " + \
-                      "calibration factors.!"
+                    "calibration factors!"
                 raise Exception(msg)
+            #check paz factor
+            if trace.stats.has_key('paz') is True:
+                paz.setdefault(trace.id, trace.stats.paz)
+                if trace.stats.paz != paz[trace.id]:
+                    msg = "Can't merge traces with same ids but differing " + \
+                        "paz factors!"
+                    raise Exception(msg)
+            # check coordinates
+            if trace.stats.has_key('coordinates') is True:
+                coordinate.setdefault(trace.id, trace.stats.coordinates)
+                if trace.stats.coordinates != coordinate[trace.id]:
+                    msg = "Can't merge traces with same ids but differing " + \
+                        "coordinate factors!"
+                    raise Exception(msg)
 
     def merge(self, method=0, fill_value=None, interpolation_samples=0):
         """
